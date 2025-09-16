@@ -214,93 +214,78 @@ const ConsumerDashboard = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <KPICard
-          icon={Wallet}
-          title="Wallet Balance"
-          value={`₹${kpiData.walletBalance.toFixed(2)}`}
-          unit=""
-          color="text-blue-500"
-        />
-        <KPICard
-          icon={Activity}
-          title="Units Consumed"
-          value={kpiData.unitsConsumed}
-          unit="kWh"
-          color="text-purple-500"
-        />
-        <KPICard
-          icon={Zap}
-          title="Active Sessions"
-          value={kpiData.activeSessions}
-          unit="this month"
-          color="text-amber-500"
-        />
-      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+  {/* Wallet Balance */}
+  <KPICard
+    icon={Wallet}
+    title="Wallet Balance"
+    value={`₹${kpiData.walletBalance.toFixed(2)}`}
+    unit=""
+    color="text-blue-500"
+  />
 
-      <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
-        <h3 className="text-xl font-bold text-gray-900 mb-4">Quick Actions</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          <button
-            className="flex items-center space-x-3 p-4 rounded-xl border-2 border-dashed border-gray-200 hover:border-amber-400 hover:bg-amber-50 transition-all duration-200"
-            onClick={() => navigate("/topup")}
-          >
-            <Plus className="text-amber-500 h-6 w-6" />
-            <span className="font-semibold text-gray-700">Top Up Wallet</span>
-          </button>
-          {/* <button
-            className="flex items-center space-x-3 p-4 rounded-xl border-2 border-dashed border-gray-200 hover:border-green-400 hover:bg-green-50 transition-all duration-200"
-            onClick={() => navigate("/providers")}
-          >
-            <Zap className="text-green-500 h-6 w-6" />
-            <span className="font-semibold text-gray-700">Buy Energy</span>
-          </button> */}
-          {/* <button
-            className="flex items-center space-x-3 p-4 rounded-xl border-2 border-dashed border-gray-200 hover:border-red-400 hover:bg-red-50 transition-all duration-200"
-            onClick={() => navigate("/issues")}
-          >
-            <HelpCircle className="text-red-500 h-6 w-6" />
-            <span className="font-semibold text-gray-700">Report Issue</span>
-          </button> */}
-          {/* <div className="flex items-center space-x-3 p-4 rounded-xl border-2 border-dashed border-gray-200">
-            <input
-              type="number"
-              min={1}
-              className="w-24 rounded border px-3 py-2"
-              value={consumeKwh}
-              onChange={(e) => setConsumeKwh(e.target.value)}
-            />
-            <span className="text-sm text-neutral-600">kWh</span>
-            <button
-              type="button"
-              className="rounded bg-emerald-600 text-white px-4 py-2 hover:bg-emerald-700"
-              onClick={handleConsume}
-            >
-              Consume Energy
-            </button>
-          </div> */}
-          <div className="flex items-center space-x-3 p-4 rounded-xl border-2 border-dashed border-gray-200">
-            <input
-              type="number"
-              min={1}
-              className="w-28 rounded border px-3 py-2"
-              value={buyAmountRs}
-              onChange={(e) => setBuyAmountRs(e.target.value)}
-            />
-            <span className="text-sm text-neutral-600">₹ amount</span>
-            <button
-              type="button"
-              className="rounded bg-blue-600 text-white px-4 py-2 hover:bg-blue-700"
-              onClick={handleBuyEnergyWithRs}
-            >
-              Pay & Get Energy
-            </button>
-            {/* <div className="text-xs text-neutral-500">
-              Fee {platformFeePercent}% • ₹{providerPricePerKwh}/kWh
-            </div> */}
-          </div>
-        </div>
-      </div>
+  {/* Units Consumed */}
+  <KPICard
+    icon={Activity}
+    title="Units Consumed"
+    value={kpiData.unitsConsumed}
+    unit="kWh"
+    color="text-purple-500"
+  />
+
+  {/* Active Sessions (spans 2 rows) */}
+  <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 row-span-2 flex flex-col">
+    <div className="flex items-center space-x-2 mb-3">
+      <Zap className="text-amber-500 h-5 w-5" />
+      <span className="text-gray-600 text-sm font-medium">Active Sessions</span>
+    </div>
+    <div className="text-3xl font-bold text-gray-900 mb-4">
+      {kpiData.activeSessions}
+    </div>
+    {/* Dummy Graph */}
+    <div className="flex-1 flex items-end space-x-2 h-48">
+      <div className="w-4 bg-amber-200 h-12 rounded"></div>
+      <div className="w-4 bg-amber-400 h-20 rounded"></div>
+      <div className="w-4 bg-amber-500 h-32 rounded"></div>
+      <div className="w-4 bg-amber-300 h-16 rounded"></div>
+      <div className="w-4 bg-amber-600 h-40 rounded"></div>
+    </div>
+  </div>
+
+  {/* Quick Actions */}
+  <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+    <h3 className="text-xl font-bold text-gray-900 mb-4">Quick Actions</h3>
+    <button
+      className="flex items-center space-x-3 p-4 rounded-xl border-2 border-dashed border-gray-200 hover:border-amber-400 hover:bg-amber-50 transition-all duration-200 w-full"
+      onClick={() => navigate("/topup")}
+    >
+      <Plus className="text-amber-500 h-6 w-6" />
+      <span className="font-semibold text-gray-700">Top Up Wallet</span>
+    </button>
+  </div>
+
+  {/* Pay and Get */}
+  <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+    <h3 className="text-xl font-bold text-gray-900 mb-4">Pay and Get</h3>
+    <div className="flex items-center space-x-3">
+      <input
+        type="number"
+        min={1}
+        className="w-28 rounded border px-3 py-2"
+        value={buyAmountRs}
+        onChange={(e) => setBuyAmountRs(e.target.value)}
+      />
+      <span className="text-sm text-neutral-600">₹ amount</span>
+      <button
+        type="button"
+        className="rounded bg-blue-600 text-white px-4 py-2 hover:bg-blue-700"
+        onClick={handleBuyEnergyWithRs}
+      >
+        Pay & Get Energy
+      </button>
+    </div>
+  </div>
+</div>
 
       <div className="grid lg:grid-cols-1 gap-8">
         <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
