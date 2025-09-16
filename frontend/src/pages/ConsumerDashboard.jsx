@@ -12,7 +12,9 @@ import {
   Bell,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import profileImg from "../images/profile.png";
 import { DashboardFooter } from "../components/DashboardFooter";
+import Map from "../components/Map";
 
 const ConsumerDashboard = () => {
   const navigate = useNavigate();
@@ -156,29 +158,38 @@ const ConsumerDashboard = () => {
 
   return (
     <div className="space-y-8 p-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">CONSUMER DASHBORD</h1>
-        <div className="flex items-center gap-3">
-          <button
-            className="relative rounded-xl border px-3 py-2 hover:bg-neutral-50"
-            onClick={() => navigate("/notifications")}
-            aria-label="Notifications"
-          >
-            <Bell className="h-5 w-5" />
-            {notificationCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-amber-600 text-white text-xs rounded-full px-1.5 py-0.5">
-                {notificationCount}
-              </span>
-            )}
-          </button>
-          <button
-            className="rounded-xl bg-neutral-900 text-white px-3 py-2 hover:bg-neutral-800"
-            onClick={handleLogout}
-          >
-            Logout
-          </button>
-        </div>
-      </div>
+  <div className="flex items-center justify-between">
+    <h1 className="text-3xl font-bold">CONSUMER DASHBORD</h1>
+    <div className="flex items-center gap-3">
+      {/* Notifications Button */}
+      <button
+        className="relative rounded-xl border px-3 py-2 hover:bg-neutral-50"
+        onClick={() => navigate("/notifications")}
+        aria-label="Notifications"
+      >
+        <Bell className="h-5 w-5" />
+        {notificationCount > 0 && (
+          <span className="absolute -top-1 -right-1 bg-amber-600 text-white text-xs rounded-full px-1.5 py-0.5">
+            {notificationCount}
+          </span>
+        )}
+      </button>
+
+      {/* Profile Image Button (acts as logout) */}
+      <button
+        onClick={handleLogout}
+        className="w-10 h-10 rounded-full overflow-hidden border-2 border-gray-300 hover:ring-2 hover:ring-amber-600 transition"
+        aria-label="Logout"
+      >
+        <img
+          src={profileImg}
+          alt="Profile"
+          className="w-full h-full object-cover"
+        />
+      </button>
+    </div>
+  </div>
+
       <div className="bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 rounded-3xl p-8 border border-gray-100">
         <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between">
           <div className="flex-1">
@@ -339,6 +350,13 @@ const ConsumerDashboard = () => {
           </div>
         </div>
       </div>
+      <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+  <h3 className="text-xl font-bold text-gray-900 mb-4">
+    Charging Locations - Thiruvananthapuram
+  </h3>
+  <Map />
+</div>
+
       <DashboardFooter />
     </div>
   );
