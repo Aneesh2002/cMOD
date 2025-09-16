@@ -15,6 +15,7 @@ import { useNavigate } from "react-router-dom";
 import profileImg from "../images/profile.png";
 import { DashboardFooter } from "../components/DashboardFooter";
 import Map from "../components/Map";
+import bell from "../images/bell.png";
 
 const ConsumerDashboard = () => {
   const navigate = useNavigate();
@@ -163,17 +164,21 @@ const ConsumerDashboard = () => {
     <div className="flex items-center gap-3">
       {/* Notifications Button */}
       <button
-        className="relative rounded-xl border px-3 py-2 hover:bg-neutral-50"
-        onClick={() => navigate("/notifications")}
-        aria-label="Notifications"
-      >
-        <Bell className="h-5 w-5" />
-        {notificationCount > 0 && (
-          <span className="absolute -top-1 -right-1 bg-amber-600 text-white text-xs rounded-full px-1.5 py-0.5">
-            {notificationCount}
-          </span>
-        )}
-      </button>
+  onClick={() => navigate("/notifications")}
+  className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-gray-300 hover:ring-2 hover:ring-amber-600 transition flex items-center justify-center"
+  aria-label="Notifications"
+>
+  <img
+    src={bell}
+    alt="Notifications"
+    className="w-6 h-6 object-contain"
+  />
+  {notificationCount > 0 && (
+    <span className="absolute -top-1 -right-1 bg-amber-600 text-white text-xs rounded-full px-1.5 py-0.5">
+      {notificationCount}
+    </span>
+  )}
+</button>
 
       {/* Profile Image Button (acts as logout) */}
       <button
