@@ -4,7 +4,9 @@ import { Zap } from "lucide-react";
 
 export const Register = () => {
   const [role, setRole] = useState("consumer");
-  const [nameOption, setNameOption] = useState("1");
+  const [nameOption, setNameOption] = useState("");
+  const [email, setEmail] = useState("");       // ✅ added
+  const [password, setPassword] = useState(""); // ✅ added
   const navigate = useNavigate();
 
   const roleLabel =
@@ -22,15 +24,20 @@ export const Register = () => {
       ? "from-green-500 to-emerald-500"
       : "from-indigo-500 to-blue-600";
 
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
-    // Fake signup: store chosen role and name, then go to dashboard
-    localStorage.setItem("role", role);
-    localStorage.setItem("nameOption", nameOption);
-    if (role === "consumer") navigate("/consumer-dashboard", { replace: true });
-    else if (role === "supplier")
-      navigate("/supplier-dashboard", { replace: true });
-    else navigate("/provider-dashboard", { replace: true });
+    try {
+      const res = await fetch("http://localhost:5000/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ role, name: nameOption, email, password }),
+      });
+      const data = await res.json();
+      if (res.ok) navigate(`/${role}-dashboard`);
+      else alert(data.error);
+    } catch (err) {
+      console.error("Register error:", err);
+    }
   };
 
   return (
@@ -79,15 +86,14 @@ export const Register = () => {
             <label className="block text-sm font-semibold text-gray-700 mb-1">
               Name
             </label>
-            <select
+            <input
+              type="text"
               value={nameOption}
               onChange={(e) => setNameOption(e.target.value)}
+              placeholder="Enter your name"
               className="w-full rounded-xl border border-gray-300 px-4 py-2 focus:ring-2 focus:ring-gray-400"
-            >
-              <option value="1">1</option>
-              <option value="2">2</option>
-              <option value="3">3</option>
-            </select>
+              required
+            />
           </div>
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-1">
@@ -95,8 +101,11 @@ export const Register = () => {
             </label>
             <input
               type="email"
+              value={email} // ✅ bind state
+              onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
               className="w-full rounded-xl border px-4 py-2 focus:ring-2 focus:ring-gray-400"
+              required
             />
           </div>
           <div>
@@ -105,8 +114,11 @@ export const Register = () => {
             </label>
             <input
               type="password"
+              value={password} // ✅ bind state
+              onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
               className="w-full rounded-xl border px-4 py-2 focus:ring-2 focus:ring-gray-400"
+              required
             />
           </div>
           <button
@@ -130,4 +142,4 @@ export const Register = () => {
     </div>
   );
 };
-
+ 
