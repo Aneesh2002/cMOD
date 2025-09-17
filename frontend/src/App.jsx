@@ -26,6 +26,7 @@ import SupplierDashboard from "./pages/SupplierDashboard";
 import ProviderDashboard from "./pages/ProviderDashboard";
 import { Providers } from "./pages/Providers";
 import AddSupplier from "./pages/AddSupplier";
+import TransactionsPage from "./pages/TransactionsPage";
 
 function App() {
   return (
@@ -53,6 +54,7 @@ function App() {
           <Route path="issues" element={<Issues />} />
           <Route path="profile" element={<Profile />} />
           <Route path="notifications" element={<Notifications />} />
+          <Route path="transactions-page" element={<TransactionsPage />} />
         </Route>
 
         {/* Catch-all redirect */}
