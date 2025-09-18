@@ -27,6 +27,7 @@ import ProviderDashboard from "./pages/ProviderDashboard";
 import { Providers } from "./pages/Providers";
 import AddSupplier from "./pages/AddSupplier";
 import TransactionsPage from "./pages/TransactionsPage";
+import ConsumerProfile from "./pages/Consumer-Profile";
 
 function App() {
   return (
@@ -41,6 +42,7 @@ function App() {
         <Route path="/supplier-dashboard" element={<SupplierDashboard />} />
         <Route path="/provider-dashboard" element={<ProviderDashboard />} />
         <Route path="/add-supplier" element={<AddSupplier />} />
+        <Route path="/consumer-profile" element={<ConsumerProfile />} />
 
         {/* App Layout with Nested Routes */}
         <Route path="/" element={<AppLayout />}>
