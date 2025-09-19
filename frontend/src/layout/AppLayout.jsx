@@ -88,15 +88,15 @@ export const AppLayout = () => {
               </NavLink>
             </nav> */}
             <div className="flex gap-3">
-              <NavLink to="/login" className="px-3 py-1.5 rounded border">
+              {/* <NavLink to="/login" className="px-3 py-1.5 rounded border">
                 Login
               </NavLink>
-              <NavLink
+              <NavLink >
                 to="/register"
                 className="px-3 py-1.5 rounded bg-amber-600 text-white"
               >
                 Register
-              </NavLink>
+              </NavLink> */}
             </div>
           </div>
         </header>
