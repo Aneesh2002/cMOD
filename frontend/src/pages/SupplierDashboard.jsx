@@ -1,304 +1,126 @@
-import React from "react";
+import React, { useState } from "react";
+import Header from "../components/SupplierComponents/header";
+import mockData from '../components/SupplierComponents/MockData';
+import Sidebar from "../components/SupplierComponents/Sidebar";
+import Footer from "../components/SupplierComponents/Footer";
+import OverviewSection from '../components/SupplierComponents/Overview';
+import TokenWalletSection from "../components/SupplierComponents/TokenWalletsection";
+import EnergyRequestSection from "../components/SupplierComponents/EnergyRequests";
+import ServicesSection from "../components/SupplierComponents/Services";
 import {
-  Wallet,
-  Zap,
-  TrendingUp,
-  Plus,
-  Activity,
-  HelpCircle,
-  CheckCircle,
-  Bell,
+    Wallet,
+    Zap,
+    Activity,
+    Home,
+    FileText,
+    Menu,
+    LogOut,
+    Search,
+    Bell,
+    ArrowUpRight,
+    Coins,
+    Sun,
+    Layers,
+    Wind,
+    ChevronDown,
+    Filter,
+    Download,
+    CheckCircle,
+    XCircle,
+    ChevronLeft,
+    ChevronRight,
+    Share2
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { DashboardFooter } from "../components/DashboardFooter";
-// import { Line } from "react-chartjs-2"; // For the graph
+
+
+
+const TotalTransactionsSection = ({ transactions }) => {
+        return (
+                <div className="bg-white p-6 rounded-xl border border-gray-200">
+                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
+                                <h2 className="text-xl font-bold text-gray-800 mb-2 sm:mb-0">All Transactions</h2>
+                                <div className="flex space-x-2">
+                                        <button className="flex items-center space-x-2 px-4 py-2 text-sm font-medium text-gray-600 bg-white border rounded-lg hover:bg-gray-50">
+                                                <Filter className="h-4 w-4" /><span>Filter</span>
+                                        </button>
+                                        <button className="flex items-center space-x-2 px-4 py-2 text-sm font-medium text-white bg-green-600 border rounded-lg hover:bg-green-700">
+                                                <Download className="h-4 w-4" /><span>Export</span>
+                                        </button>
+                                </div>
+                        </div>
+                        <div className="overflow-x-auto">
+                                <table className="w-full text-sm text-left text-gray-500">
+                                         <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+                                                <tr>
+                                                        <th scope="col" className="px-6 py-3">Transaction Hash</th>
+                                                        <th scope="col" className="px-6 py-3">Type</th>
+                                                        <th scope="col" className="px-6 py-3">Amount</th>
+                                                        <th scope="col" className="px-6 py-3">Date</th>
+                                                        <th scope="col" className="px-6 py-3">Status</th>
+                                                </tr>
+                                        </thead>
+                                        <tbody>
+                                                {transactions.map(tx => {
+                                                        const statusColor = tx.status === 'Confirmed' ? 'bg-green-100 text-green-800' : tx.status === 'Pending' ? 'bg-amber-100 text-amber-800' : 'bg-red-100 text-red-800';
+                                                        return (
+                                                                <tr key={tx.id} className="bg-white border-b hover:bg-gray-50">
+                                                                        <td className="px-6 py-4 font-mono text-xs text-gray-900">{tx.id}</td>
+                                                                        <td className="px-6 py-4 flex items-center space-x-2"><tx.icon className="h-5 w-5 text-gray-400" /><span>{tx.type}</span></td>
+                                                                        <td className="px-6 py-4 font-semibold">{tx.amount}</td>
+                                                                        <td className="px-6 py-4">{tx.date}</td>
+                                                                        <td className="px-6 py-4"><span className={`px-2 py-1 rounded-full text-xs font-medium ${statusColor}`}>{tx.status}</span></td>
+                                                                </tr>
+                                                        );
+                                                })}
+                                        </tbody>
+                                </table>
+                        </div>
+                        <div className="flex justify-between items-center mt-6">
+                                <span className="text-sm text-gray-600">Showing 1 to 10 of {transactions.length} results</span>
+                                <div className="flex space-x-1">
+                                        <button className="p-2 rounded-md hover:bg-gray-100"><ChevronLeft className="h-5 w-5"/></button>
+                                        <button className="p-2 rounded-md hover:bg-gray-100"><ChevronRight className="h-5 w-5"/></button>
+                                </div>
+                        </div>
+                </div>
+        )
+};
 
 const SupplierDashboard = () => {
-  const navigate = useNavigate();
-  const supplierName = localStorage.getItem("nameOption") || "1";
+        const [sidebarOpen, setSidebarOpen] = useState(false);
+        const [activeSection, setActiveSection] = useState("overview");
 
-  const [totalEnergySupplied, setTotalEnergySupplied] = React.useState(
-    Number(localStorage.getItem("totalEnergySupplied") || "0")
-  );
-  const [totalPaymentReceived, setTotalPaymentReceived] = React.useState(
-    Number(localStorage.getItem("totalPaymentReceived") || "0")
-  );
-  const [transactions, setTransactions] = React.useState(() => {
-    const saved = localStorage.getItem("supplierTransactions");
-    if (saved) return JSON.parse(saved);
-    return [];
-  });
-  const [issues, setIssues] = React.useState(() => {
-    const saved = localStorage.getItem("issues");
-    if (saved) return JSON.parse(saved);
-    return [];
-  });
+        const renderActiveSection = () => {
+                switch (activeSection) {
+                        case "overview": return <OverviewSection data={mockData} />;
+                        case "total_transactions": return <TotalTransactionsSection transactions={mockData.allTransactions} />;
+                        case "token_wallet": return <TokenWalletSection wallet={mockData.tokenWallet} />;
+                        case "energy_req": return <EnergyRequestSection requests={mockData.energyRequests} />;
+                        case "services": return <ServicesSection services={mockData.services}/>;
+                        default: return <OverviewSection data={mockData} />;
+                }
+        };
 
-  const [providerPayouts, setProviderPayouts] = React.useState(() => {
-    const saved = localStorage.getItem("providerPayouts");
-    if (saved) return JSON.parse(saved);
-    return [];
-  });
-
-  const [newIssue, setNewIssue] = React.useState("");
-  const [notificationCount, setNotificationCount] = React.useState(0);
-
-  // Handle new issue submission
-  const handleNewIssue = () => {
-    if (!newIssue) return alert("Please enter a valid issue description.");
-    const updatedIssues = [
-      ...issues,
-      { id: Date.now(), description: newIssue, status: "pending" },
-    ];
-    setIssues(updatedIssues);
-    localStorage.setItem("issues", JSON.stringify(updatedIssues));
-    setNewIssue("");
-    alert("Issue raised successfully.");
-  };
-
-  // Re-render transactions and issues based on local storage updates
-  React.useEffect(() => {
-    const onStorage = () => {
-      const savedTransactions = localStorage.getItem("supplierTransactions");
-      setTransactions(savedTransactions ? JSON.parse(savedTransactions) : []);
-      const savedIssues = localStorage.getItem("issues");
-      setIssues(savedIssues ? JSON.parse(savedIssues) : []);
-      const req = localStorage.getItem("energyRequests");
-      setNotificationCount(req ? JSON.parse(req).length : 0);
-      
-      // Update supplier metrics
-      setTotalEnergySupplied(Number(localStorage.getItem("totalEnergySupplied") || "0"));
-      setTotalPaymentReceived(Number(localStorage.getItem("totalPaymentReceived") || "0"));
-
-      const payouts = localStorage.getItem("providerPayouts");
-      setProviderPayouts(payouts ? JSON.parse(payouts) : []);
-    };
-    window.addEventListener("storage", onStorage);
-    onStorage();
-    return () => window.removeEventListener("storage", onStorage);
-  }, []);
-
-  const handleLogout = () => {
-    localStorage.removeItem("role");
-    localStorage.removeItem("nameOption");
-    navigate("/login", { replace: true });
-  };
-
-  // Dummy chart data for transaction history and energy supplied
-  // const transactionHistoryData = {
-  //   labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep"],
-  //   datasets: [
-  //     {
-  //       label: "Transactions",
-  //       data: [50, 70, 100, 80, 130, 120, 150, 160, 180],
-  //       fill: false,
-  //       borderColor: "#34D399", // Green color
-  //       tension: 0.1,
-  //     },
-  //   ],
-  // };
-
-  const energySuppliedData = {
-    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep"],
-    datasets: [
-      {
-        label: "Energy Supplied",
-        data: [500, 600, 800, 700, 850, 900, 1000, 1100, 1200],
-        fill: false,
-        borderColor: "#10B981", // Dark Green color
-        tension: 0.1,
-      },
-    ],
-  };
-
-  const KPICard = ({ icon: Icon, title, value, unit, color }) => (
-    <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-xl transition-shadow duration-300">
-      <div className="flex items-start justify-between">
-        <div className="flex-1">
-          <div className="flex items-center space-x-2 mb-2">
-            <Icon className={`${color} h-5 w-5`} />
-            <span className="text-gray-600 text-sm font-medium">{title}</span>
-          </div>
-          <div className="text-3xl font-bold text-gray-900 mb-1">
-            {typeof value === "number" ? value.toLocaleString() : value}
-            <span className="text-lg font-normal text-gray-500 ml-1">
-              {unit}
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-
-  return (
-    <div className="space-y-8 p-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-green-600">
-          SUPPLIER DASHBOARD
-        </h1>
-        <div className="flex items-center gap-3">
-          <button
-            className="relative rounded-xl border px-3 py-2 hover:bg-neutral-50"
-            onClick={() => navigate("/notifications")}
-            aria-label="Notifications"
-          >
-            <Bell className="h-5 w-5" />
-            {notificationCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-amber-600 text-white text-xs rounded-full px-1.5 py-0.5">
-                {notificationCount}
-              </span>
-            )}
-          </button>
-          <button
-            className="rounded-xl bg-neutral-900 text-white px-3 py-2 hover:bg-neutral-800"
-            onClick={handleLogout}
-          >
-            Logout
-          </button>
-        </div>
-      </div>
-
-      <div className="bg-gradient-to-br from-green-50 via-green-100 to-green-200 rounded-3xl p-8 border border-gray-100">
-        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between">
-          <div className="flex-1">
-            <div className="flex items-center space-x-3 mb-3">
-              <div className="bg-gradient-to-r from-green-500 to-green-600 p-3 rounded-2xl">
-                <Zap className="text-white h-8 w-8" />
-              </div>
-              <div>
-                <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
-                  Supplier Dashboard
-                </h1>
-                <p className="text-green-600 font-semibold text-lg">
-                  Manage Your Energy Supply Efficiently
-                </p>
-              </div>
-            </div>
-            <p className="text-gray-700 text-lg max-w-2xl">
-              Welcome back, Supplier {supplierName}. Track your energy supply
-              and payments.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <KPICard
-          icon={Zap}
-          title="Total Energy Supplied"
-          value={totalEnergySupplied}
-          unit="kWh"
-          color="text-green-500"
-        />
-        <KPICard
-          icon={Wallet}
-          title="Total Payment Received"
-          value={`₹${totalPaymentReceived.toFixed(2)}`}
-          unit=""
-          color="text-green-600"
-        />
-        <KPICard
-          icon={Activity}
-          title="Transactions Count"
-          value={transactions.length}
-          unit="transactions"
-          color="text-green-700"
-        />
-      </div>
-{/* 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
-        <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
-          <h3 className="text-xl font-bold text-gray-900 mb-4">
-            Transaction History
-          </h3>
-          <div className="h-48 grid place-items-center text-neutral-400">
-            [Chart placeholder]
-          </div>
-        </div>
-        <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
-          <h3 className="text-xl font-bold text-gray-900 mb-4">
-            Total Energy Supplied
-          </h3>
-          <div className="h-48 grid place-items-center text-neutral-400">
-            [Chart placeholder]
-          </div>
-        </div>
-      </div> */}
-
-      {/* <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
-        <h3 className="text-xl font-bold text-gray-900 mb-4">Raise Issue</h3>
-        <div className="space-y-4">
-          <textarea
-            className="w-full p-4 rounded-lg border-2 border-gray-300"
-            placeholder="Describe the issue..."
-            value={newIssue}
-            onChange={(e) => setNewIssue(e.target.value)}
-            rows={4}
-          ></textarea>
-          <button
-            className="w-full p-4 rounded-lg bg-green-600 text-white hover:bg-green-700 transition-all duration-200"
-            onClick={handleNewIssue}
-          >
-            Raise Issue
-          </button>
-        </div>
-      </div> */}
-
-      <div className="grid lg:grid-cols-1 gap-8">
-        {/* <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-xl font-bold text-gray-900">Raised Issues</h3>
-          </div>
-          <div className="space-y-3">
-            {issues.map((issue) => (
-              <div
-                key={issue.id}
-                className="flex items-center justify-between p-3 rounded-xl bg-gray-50"
-              >
-                <div className="flex items-center space-x-3">
-                  <div className="p-2 rounded-full bg-yellow-100">
-                    <HelpCircle className="h-4 w-4 text-yellow-600" />
-                  </div>
-                  <div>
-                    <p className="font-medium text-gray-900">
-                      {issue.description}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      Status: {issue.status}
-                    </p>
-                  </div>
+        return (
+                <div className="min-h-screen bg-gray-100 flex flex-col">
+                        <Header onMenuClick={() => setSidebarOpen(!sidebarOpen)} supplierName={mockData.supplierName} />
+                        <div className="flex flex-1 overflow-hidden">
+                                <Sidebar 
+                                        sidebarOpen={sidebarOpen} 
+                                        setSidebarOpen={setSidebarOpen} 
+                                        activeSection={activeSection} 
+                                        setActiveSection={setActiveSection} 
+                                />
+                                <div className="flex flex-col flex-1 overflow-hidden">
+                                        <main className="flex-1 p-6 overflow-y-auto">
+                                                {renderActiveSection()}
+                                        </main>
+                                        <Footer />
+                                </div>
+                        </div>
+                        {sidebarOpen && <div className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden" onClick={() => setSidebarOpen(false)}></div>}
                 </div>
-              </div>
-            ))}
-          </div>
-        </div> */}
-        <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-xl font-bold text-gray-900">Payments from Provider</h3>
-          </div>
-          <div className="space-y-3">
-            {providerPayouts.length === 0 ? (
-              <div className="text-center text-neutral-500 py-6">No payouts yet</div>
-            ) : (
-              providerPayouts.slice(0, 10).map((payout) => (
-                <div
-                  key={payout.id}
-                  className="flex items-center justify-between p-3 rounded-xl bg-gray-50"
-                >
-                  <div>
-                    <div className="font-medium text-gray-900">{payout.type}</div>
-                    <div className="text-sm text-gray-500">{payout.date}{payout.kwh ? ` • ${payout.kwh} kWh` : ""}</div>
-                  </div>
-                  <div className="font-bold text-green-600">+₹{payout.amount}</div>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-      </div>
-      <DashboardFooter />
-    </div>
-  );
+        );
 };
 
 export default SupplierDashboard;
