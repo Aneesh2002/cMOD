@@ -45,11 +45,11 @@ export default function Sidebar() {
 
       {/* Navigation */}
       <nav className="p-4 space-y-2">
-        <NavItem to="/" icon={LayoutDashboard} label="Dashboard" />
+        <NavItem to="/consumer-dashboard" icon={LayoutDashboard} label="Dashboard" />
         <NavItem to="/stations" icon={MapPin} label="Stations" />
         <NavItem to="/transactions-page" icon={ReceiptText} label="Transactions" />
-        <NavItem to="/account" icon={User2} label="Account" />
-        <NavItem to="/subscription" icon={BadgeDollarSign} label="Subscription plan" />
+        <NavItem to="/consumer-profile" icon={User2} label="Account" />
+        <NavItem to="/subscriptions" icon={BadgeDollarSign} label="Subscription plan" />
       </nav>
 
       {/* My Cars */}
@@ -91,16 +91,8 @@ export default function Sidebar() {
         </button>
       </div>
 
-      {/* Sell Energy promo */}
-      <div className="mt-auto p-4">
-        <div className="rounded-2xl bg-neutral-900 text-white p-4">
-          <div className="text-sm font-semibold">Sell Your Energy</div>
-          <div className="text-xs text-neutral-200">Earn up to ₹250/week</div>
-          <button className="mt-3 text-sm bg-white text-neutral-900 rounded-lg px-3 py-1.5 font-semibold">
-            Learn More
-          </button>
-        </div>
-      </div>
+      
+      
     </aside>
   );
 }
