@@ -29,8 +29,7 @@ import AddSupplier from "./pages/AddSupplier";
 import TransactionsPage from "./pages/TransactionsPage";
 import ConsumerProfile from "./pages/Consumer-Profile";
 import Subscriptions from "./pages/Subscriptions";
-
-
+import MapPage from "./pages/Sations";
 function App() {
   return (
     <BrowserRouter>
@@ -47,6 +46,7 @@ function App() {
         <Route path="/consumer-profile" element={<ConsumerProfile />} />
         <Route path="/subscriptions" element={<Subscriptions />} /> 
         <Route path="transactions-page" element={<TransactionsPage />} />
+        <Route path="/map" element={<MapPage />} />
 
         {/* App Layout with Nested Routes */}
         <Route path="/" element={<AppLayout />}>

@@ -1,9 +1,10 @@
-// TransactionsPage.jsx (final)
+// TransactionsPage.jsx
 import React from "react";
-import { Plus, Activity, Bell } from "lucide-react";
+import { Bell } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import { DashboardFooter } from "../components/DashboardFooter";
+import RecentTransactions from "../components/RecentTransactions";
 
 const TransactionsPage = () => {
   const navigate = useNavigate();
@@ -25,10 +26,10 @@ const TransactionsPage = () => {
 
   return (
     <div className="flex min-h-screen bg-white w-full">
-      {/* Sidebar (keeps its own width) */}
+      {/* Sidebar */}
       <Sidebar />
 
-      {/* Right pane: must include min-w-0 so it can expand */}
+      {/* Right pane */}
       <div className="flex flex-col flex-1 min-w-0">
         <main className="flex-1 px-8 py-6 space-y-8 w-full">
           {/* Header */}
@@ -57,52 +58,11 @@ const TransactionsPage = () => {
 
           {/* Full-width grid */}
           <div className="grid grid-cols-1 gap-8 w-full">
-            <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-xl font-bold text-gray-900">Recent Transactions</h3>
-                <button className="text-amber-600 hover:text-amber-700 font-medium">
-                  View All
-                </button>
-              </div>
-
-              <div className="space-y-3">
-                {transactions.length === 0 ? (
-                  <p className="text-gray-500 text-center">No transactions yet.</p>
-                ) : (
-                  transactions.map((transaction) => (
-                    <div
-                      key={transaction.id}
-                      className="flex items-center justify-between p-3 rounded-xl bg-gray-50"
-                    >
-                      <div className="flex items-center space-x-3">
-                        <div
-                          className={`p-2 rounded-full ${
-                            transaction.amount > 0 ? "bg-green-100" : "bg-red-100"
-                          }`}
-                        >
-                          {transaction.amount > 0 ? (
-                            <Plus className="h-4 w-4 text-green-600" />
-                          ) : (
-                            <Activity className="h-4 w-4 text-red-600" />
-                          )}
-                        </div>
-                        <div>
-                          <p className="font-medium text-gray-900">{transaction.type}</p>
-                          <p className="text-sm text-gray-500">{transaction.date}</p>
-                        </div>
-                      </div>
-                      <span
-                        className={`font-bold ${
-                          transaction.amount > 0 ? "text-green-600" : "text-red-600"
-                        }`}
-                      >
-                        {transaction.amount > 0 ? "+" : ""}₹{Math.abs(transaction.amount)}
-                      </span>
-                    </div>
-                  ))
-                )}
-              </div>
-            </div>
+            <RecentTransactions
+              transactions={transactions}
+              onViewAll={() => navigate("/transactions")} // hook this to a real route if needed
+              // limit={10} // uncomment to limit how many rows show
+            />
           </div>
         </main>
 

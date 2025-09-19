@@ -46,7 +46,7 @@ export default function Sidebar() {
       {/* Navigation */}
       <nav className="p-4 space-y-2">
         <NavItem to="/consumer-dashboard" icon={LayoutDashboard} label="Dashboard" />
-        <NavItem to="/stations" icon={MapPin} label="Stations" />
+        <NavItem to="/map" icon={MapPin} label="Stations" />
         <NavItem to="/transactions-page" icon={ReceiptText} label="Transactions" />
         <NavItem to="/consumer-profile" icon={User2} label="Account" />
         <NavItem to="/subscriptions" icon={BadgeDollarSign} label="Subscription plan" />
