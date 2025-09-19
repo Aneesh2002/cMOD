@@ -1,9 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Wallet, Zap, Activity, Bell, MapPin, User } from "lucide-react";
+import { Bell, CheckCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import profileImg from "../images/profile.png";
-import Sidebar from "../components/Sidebar"; 
-import { DashboardFooter } from "../components/DashboardFooter"; 
+import Sidebar from "../components/Sidebar";
+import { DashboardFooter } from "../components/DashboardFooter";
 
 const Dropdown = ({ children, open, setOpen }) => {
   const ref = useRef();
@@ -61,30 +61,14 @@ const ConsumerProfile = () => {
     return () => window.removeEventListener("storage", onStorage);
   }, []);
 
-  // Updated Subscription plans (based on the new ET and cMT system)
-  const plans = [
-    {
-      id: 1,
-      name: "ChargeMOD Pay As You Go",
-      description: "Pay only for the energy you consume with ET tokens.",
-      pricePerET: 30, // 1 ET = ₹30
-      pricePerKwh: 30, // 1 kWh = ₹30
-      buttonText: "Claim Offer",
-    },
-    {
-      id: 2,
-      name: "ChargeMOD Basic",
-      description: "Fixed rate for monthly energy usage. Receive a fixed amount of ET tokens.",
-      monthlyET: 100, // Amount of ET provided monthly
-      buttonText: "Claim Offer",
-    },
-    {
-      id: 3,
-      name: "ChargeMOD Pro",
-      description: "Unlimited charging for a fixed price. Unlimited ET tokens.",
-      buttonText: "Claim Offer",
-    },
-  ];
+  // 🔒 Hardcoded active subscription
+  const activePlan = {
+    id: 3,
+    name: "ChargeMOD Pro",
+    description: "Unlimited charging for a fixed monthly price with unlimited ET tokens.",
+    flatMonthlyPrice: "₹1,999 / month",
+    expiryText: "Expires on 31 Dec 2025, 23:59 IST",
+  };
 
   return (
     <div className="flex min-h-screen bg-white">
@@ -147,8 +131,9 @@ const ConsumerProfile = () => {
           </p>
         </div>
 
-        {/* Profile Details */}
+        {/* Profile Details + Subscription */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Profile Information */}
           <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
             <h3 className="text-xl font-bold mb-4">Profile Information</h3>
             <p className="text-gray-600">Name: {userName}</p>
@@ -156,46 +141,48 @@ const ConsumerProfile = () => {
             <p className="text-gray-600">Date of Birth: 01-Jan-1990</p>
           </div>
 
-          {/* Subscription Plan Cards */}
+          {/* Active Subscription */}
           <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 lg:col-span-2">
-            <h3 className="text-xl font-bold mb-4">Subscription Plans</h3>
-            <div className="space-y-4">
-              {plans.map((plan) => (
-                <div
-                  key={plan.id}
-                  className="flex justify-between items-center p-4 rounded-lg bg-gray-50 hover:bg-gray-100"
-                >
-                  <div className="flex flex-col">
-                    <span className="font-semibold text-lg text-gray-800">
-                      {plan.name}
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-xl font-bold">Subscription</h3>
+              <span className="text-xs px-2 py-1 rounded-full bg-emerald-100 text-emerald-700 border border-emerald-200">
+                Active
+              </span>
+            </div>
+
+            <div className="relative overflow-hidden rounded-xl border border-emerald-200 bg-gradient-to-br from-emerald-50 to-emerald-100 p-6 min-h-48">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+                {/* Left: plan info */}
+                <div>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="h-5 w-5 text-emerald-600" />
+                    <span className="text-2xl font-bold text-gray-900">
+                      {activePlan.name}
                     </span>
-                    <span className="text-sm text-gray-500">{plan.description}</span>
                   </div>
-                  <div className="flex items-center space-x-4">
-                    {plan.pricePerET && (
-                      <span className="text-xl font-bold text-gray-900">
-                        ₹{plan.pricePerET}/ET
-                      </span>
-                    )}
-                    {plan.pricePerKwh && (
-                      <span className="text-xl font-bold text-gray-900">
-                        ₹{plan.pricePerKwh}/kWh
-                      </span>
-                    )}
-                    {plan.monthlyET && (
-                      <span className="text-xl font-bold text-gray-900">
-                        {plan.monthlyET} ET/month
-                      </span>
-                    )}
-                    <button
-                      className="bg-amber-500 text-white px-4 py-2 rounded-lg hover:bg-amber-600 transition-all"
-                      onClick={() => alert(`${plan.name} - ${plan.buttonText}`)}
-                    >
-                      {plan.buttonText}
-                    </button>
+                  <p className="text-gray-700 mt-2">{activePlan.description}</p>
+
+                  <div className="mt-4">
+                    <span className="inline-block text-sm font-semibold px-3 py-1 rounded-lg bg-white border">
+                      {activePlan.flatMonthlyPrice}
+                    </span>
                   </div>
                 </div>
-              ))}
+
+                {/* Right: status */}
+                <div className="text-right">
+                  <p className="text-sm text-gray-600">{activePlan.expiryText}</p>
+                  <button
+                    className="mt-3 px-4 py-2 rounded-lg bg-gray-200 text-gray-600 cursor-not-allowed"
+                    disabled
+                  >
+                    Active
+                  </button>
+                </div>
+              </div>
+
+              {/* Decorative stripe */}
+              <div className="absolute inset-x-0 bottom-0 h-1 bg-emerald-300/60" />
             </div>
           </div>
         </div>
