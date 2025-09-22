@@ -9,17 +9,18 @@ import {
   Menu,
   X,
 } from "lucide-react";
+import { NavLink } from "react-router-dom";
 
 const Sidebar = () => {
   const [open, setOpen] = useState(true);
 
   const navItems = [
-    { label: "Dashboard", icon: LayoutDashboard },
-    { label: "Stations", icon: MapPin },
-    { label: "Transactions", icon: ReceiptText },
-    { label: "Account", icon: User2 },
-    { label: "Subscription Plan", icon: BadgeDollarSign },
-    { label: "Redeem", icon: Gift },
+    { label: "Dashboard", icon: LayoutDashboard,path:'/consumer-dashboard' },
+    { label: "Stations", icon: MapPin, path: "/stations" },
+    { label: "Transactions", icon: ReceiptText,path: "/transactions-page" },
+    { label: "Account", icon: User2, path: "/consumer-profile" },
+    { label: "Subscription Plan", icon: BadgeDollarSign,path: "/subscriptions" },
+    { label: "Redeem", icon: Gift,path:"/redeem" },
   ];
 
   return (
@@ -43,15 +44,18 @@ const Sidebar = () => {
 
         {/* Nav Links */}
         <nav className="flex-1 overflow-y-auto">
-          {navItems.map(({ label, icon: Icon }) => (
-            <a
+          {navItems.map(({ label, icon: Icon,path }) => (
+            <NavLink
               key={label}
-              href="#"
-              className="flex items-center gap-3 px-4 py-3 hover:bg-gray-700"
-            >
+           to={path}
+className={({ isActive }) =>
+                `flex items-center gap-3 px-4 py-3 hover:bg-gray-700 transition-colors ${
+                  isActive ? "bg-gray-700 font-semibold" : ""
+                }`
+              }            >
               <Icon size={20} />
               {open && <span>{label}</span>}
-            </a>
+            </NavLink>
           ))}
         </nav>
       </div>

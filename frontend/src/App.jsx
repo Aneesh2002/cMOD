@@ -47,7 +47,7 @@ function App() {
         <Route path="/consumer-profile" element={<ConsumerProfile />} />
         <Route path="/subscriptions" element={<Subscriptions />} /> 
         <Route path="transactions-page" element={<TransactionsPage />} />
-        <Route path="/map" element={<MapPage />} />
+        <Route path="/stations" element={<MapPage />} />
 
         {/* App Layout with Nested Routes */}
         <Route path="/" element={<AppLayout />}>
