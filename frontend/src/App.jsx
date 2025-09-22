@@ -30,6 +30,7 @@ import TransactionsPage from "./pages/TransactionsPage";
 import ConsumerProfile from "./pages/Consumer-Profile";
 import Subscriptions from "./pages/Subscriptions";
 import MapPage from "./pages/Sations";
+import { ConsumerLayout } from "./layout/ConsumerDashboardLayout";
 function App() {
   return (
     <BrowserRouter>
@@ -39,7 +40,7 @@ function App() {
         <Route path="/register" element={<Register />} />
 
         {/* Standalone Dashboards */}
-        <Route path="/consumer-dashboard" element={<ConsumerDashboard />} />
+        <Route path="/consumer-dashboard" element={<ConsumerLayout />} />
         <Route path="/supplier-dashboard" element={<SupplierDashboard />} />
         <Route path="/provider-dashboard" element={<ProviderDashboard />} />
         <Route path="/add-supplier" element={<AddSupplier />} />
