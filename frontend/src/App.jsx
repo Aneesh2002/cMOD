@@ -26,11 +26,12 @@ import SupplierDashboard from "./pages/SupplierDashboard";
 import ProviderDashboard from "./pages/ProviderDashboard";
 import { Providers } from "./pages/Providers";
 import AddSupplier from "./pages/AddSupplier";
-// import TransactionsPage from "./pages/TransactionsPage";
+import TransactionsPage from "./pages/TransactionsPage";
 import ConsumerProfile from "./pages/Consumer-Profile";
 import Subscriptions from "./pages/Subscriptions";
 import MapPage from "./pages/Sations";
 import { ConsumerLayout } from "./layout/ConsumerDashboardLayout";
+import WalletPage from "./pages/Rewards";
 function App() {
   return (
     <BrowserRouter>
@@ -48,6 +49,7 @@ function App() {
         <Route path="/subscriptions" element={<Subscriptions />} /> 
         <Route path="transactions-page" element={<TransactionsPage />} />
         <Route path="/stations" element={<MapPage />} />
+        <Route path="/redeem" element={<WalletPage />} />
 
         {/* App Layout with Nested Routes */}
         <Route path="/" element={<AppLayout />}>
