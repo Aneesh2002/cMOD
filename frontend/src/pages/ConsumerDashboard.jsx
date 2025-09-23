@@ -1,9 +1,85 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Bell, LogOut } from "lucide-react";
 import { Card } from "../components/Card";
 import Map from "../components/Map";
 
+import { ethers } from "ethers";
+import { contractAddress, abi,getContract } from "../contract";
 const ConsumerDashboard = () => {
+  const [wallet, setWallet] = useState(0);
+  const [tokens, setTokens] = useState(0);
+  const [amount, setAmount] = useState("");
+
+  // Load balances
+const loadBalances = async () => {
+  try {
+    if (!window.ethereum) return alert("MetaMask not installed");
+
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    await provider.send("eth_requestAccounts", []); // request account
+    const signer = await provider.getSigner();
+    const addr = await signer.getAddress();
+    const contract = new ethers.Contract(contractAddress, abi, signer);
+
+    const [walletBalance, tokenBalance] = await contract.getBalances(addr);
+    setWallet(Number(walletBalance));
+    setTokens(Number(tokenBalance));
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+
+const handleTopUp = async (amt) => {
+  try {
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    await provider.send("eth_requestAccounts", []);
+    const signer = await provider.getSigner();
+    const contract = new ethers.Contract(contractAddress, abi, signer);
+
+    const tx = await contract.topUpFiat(amt);
+    await tx.wait();
+    loadBalances();
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+const handleBuyTokens = async (amt) => {
+  try {
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    await provider.send("eth_requestAccounts", []);
+    const signer = await provider.getSigner();
+    const contract = new ethers.Contract(contractAddress, abi, signer);
+
+    const tx = await contract.buyTokens(amt);
+    await tx.wait();
+    loadBalances();
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+const handleSellTokens = async (amt) => {
+  try {
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    await provider.send("eth_requestAccounts", []);
+    const signer = await provider.getSigner();
+    const contract = new ethers.Contract(contractAddress, abi, signer);
+
+    const tx = await contract.sellTokens(amt);
+    await tx.wait();
+    loadBalances();
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+
+  useEffect(() => {
+    loadBalances();
+  }, []);
+
   return (
     <div className="p-6">
       {/* Header */}
@@ -29,41 +105,51 @@ const ConsumerDashboard = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {/* Wallet Balance */}
         <Card title="Wallet Balance">
-          <p className="mb-3 text-gray-700 font-medium">Balance: ₹500</p>
+          <p className="mb-3 text-gray-700 font-medium">Balance: ₹{wallet}</p>
           <input
             type="number"
             placeholder="Enter amount"
-            className="w-full p-2 border rounded mb-3"
+             value={amount}
+          onChange={(e) => setAmount(e.target.value)}
+          className="w-full p-2 border rounded mb-3"
           />
           <div className="flex gap-3">
-            {[100, 200, 500].map((amt) => (
-              <button
-                key={amt}
-                className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
-              >
-                +{amt}
-              </button>
-            ))}
+          {[100, 200, 500].map((amt) => (
+            <button
+              key={amt}
+              onClick={() => handleTopUp(amt)}
+              className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
+            >
+              +{amt}
+            </button>
+          ))}
           </div>
         </Card>
 
         {/* CmT Tokens */}
         <Card title="CmT Token Balance">
-          <p className="mb-3 text-gray-700 font-medium">Tokens: 50</p>
+          <p className="mb-3 text-gray-700 font-medium">Tokens: {tokens}</p>
            <input
             type="number"
             placeholder="Enter amount to add token"
             className="w-full p-2 border rounded mb-3"
           />
           <div className="flex gap-3">
-            {[100, 200, 500].map((amt) => (
-              <button
-                key={amt}
-                className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
-              >
-                +{amt}
-              </button>
-            ))}
+            {[10, 50, 100].map((amt) => (
+            <button
+              key={amt}
+              onClick={() => handleBuyTokens(amt)}
+              className="px-3 py-1 bg-gray-200 rounded hover:bg-gray-300"
+            >
+              Buy {amt}
+            </button>
+          ))}
+           <button
+            onClick={() => handleSellTokens(10)}
+            className="px-3 py-1 bg-red-200 rounded hover:bg-red-300"
+          >
+            Sell 10
+          </button>
           </div>
         
         </Card>
