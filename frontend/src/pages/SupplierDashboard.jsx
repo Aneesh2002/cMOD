@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import Header from "../components/SupplierComponents/header";
+// import Header from "../components/SupplierComponents/header";
 import mockData from '../components/SupplierComponents/MockData';
 import Sidebar from "../components/SupplierComponents/Sidebar";
 import Footer from "../components/SupplierComponents/Footer";
 import OverviewSection from '../components/SupplierComponents/Overview';
-import TokenWalletSection from "../components/SupplierComponents/TokenWalletsection";
+// import TokenWalletSection from "../components/SupplierComponents/TokenWalletsection";
 import EnergyRequestSection from "../components/SupplierComponents/EnergyRequests";
 import ServicesSection from "../components/SupplierComponents/Services";
 import {

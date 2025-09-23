@@ -1,12 +1,13 @@
 import React, { useState } from "react";
-import { Bell } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import { DashboardFooter } from "../components/DashboardFooter";
+import { getContract } from "../contract";
 
 const Subscriptions = () => {
   const navigate = useNavigate();
   const userName = localStorage.getItem("nameOption") || "User";
+  const [loadingPlanId, setLoadingPlanId] = useState(null);
 
   const plans = [
     {
@@ -15,11 +16,12 @@ const Subscriptions = () => {
       description: "Pay only for the energy you consume with ET tokens.",
       highlight: "₹30/kWh • ₹30/ET",
       validityMonths: 1,
-      styles: "bg-amber-50 border-amber-200",
-      titleClass: "text-gray-900",
-      textClass: "text-gray-700",
-      badgeClass: "bg-amber-100 text-amber-700 border border-amber-200",
-      buttonClass: "bg-amber-500 hover:bg-amber-600 text-white",
+      cost: 30,
+      styles: "bg-gradient-to-br from-blue-200 via-purple-200 to-pink-200",
+      titleClass: "text-neutral-900",
+      textClass: "text-neutral-900",
+      badgeClass: "bg-neutral-700 text-neutral-300 border border-neutral-600",
+      buttonClass: "bg-amber-600 hover:bg-amber-700 text-white",
     },
     {
       id: 2,
@@ -27,11 +29,12 @@ const Subscriptions = () => {
       description: "Fixed monthly ET allocation for predictable usage.",
       highlight: "100 ET / month",
       validityMonths: 1,
-      styles: "bg-amber-200 border-amber-300",
-      titleClass: "text-gray-900",
-      textClass: "text-gray-800",
-      badgeClass: "bg-amber-300 text-amber-900 border border-amber-400",
-      buttonClass: "bg-amber-600 hover:bg-amber-600/90 text-white",
+      cost: 100,
+      styles: "bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500",
+      titleClass: "text-neutral-100",
+      textClass: "text-neutral-100",
+      badgeClass: "bg-amber-600 text-white border-amber-500",
+      buttonClass: "bg-amber-600 hover:bg-amber-700 text-white",
     },
     {
       id: 3,
@@ -39,68 +42,78 @@ const Subscriptions = () => {
       description: "Unlimited charging for a flat monthly price.",
       highlight: "₹1,999 / month • Unlimited",
       validityMonths: 1,
-      styles: "bg-amber-500 border-amber-600",
+      cost: 1999,
+      styles: "bg-gradient-to-br from-blue-900 via-purple-900 to-pink-900",
       titleClass: "text-white",
-      textClass: "text-amber-50",
-      badgeClass: "bg-amber-600 text-white border border-amber-600",
-      buttonClass: "bg-white text-amber-700 hover:bg-amber-50",
+      textClass: "text-neutral-200",
+      badgeClass: "bg-amber-600 text-white border-none",
+      buttonClass: "bg-amber-600 text-white hover:bg-neutral-100",
     },
   ];
 
-  const handleSelect = (plan) => {
-    alert(`Selected: ${plan.name}`);
+  const handleSelect = async (plan) => {
+    try {
+      setLoadingPlanId(plan.id);
+      const contract = await getContract();
+
+      // Get user's wallet balance
+      const [walletBalance] = await contract.getBalances(window.ethereum.selectedAddress);
+
+      if (Number(walletBalance) < plan.cost) {
+        alert("Insufficient wallet balance. Please top up before purchasing this plan.");
+        setLoadingPlanId(null);
+        return;
+      }
+
+      // Call contract to purchase subscription
+      const tx = await contract.purchaseSubscription(plan.id);
+      await tx.wait();
+
+      alert(`Subscription "${plan.name}" purchased successfully!`);
+      setLoadingPlanId(null);
+
+      // Redirect to profile or refresh page
+      navigate("/consumer-profile");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to purchase subscription.");
+      setLoadingPlanId(null);
+    }
   };
 
   return (
-    <div className="flex min-h-screen bg-white">
-      {/* Sidebar */}
+    <div className="flex min-h-screen bg-neutral-50 font-sans text-neutral-800">
       <Sidebar />
 
-      {/* Right pane: column layout so footer can stick */}
       <div className="flex flex-col flex-1">
-        {/* Main grows to push footer down */}
-        <main className="flex-1 p-6 space-y-8">
-          {/* Header */}
+        <main className="flex-1 p-8 space-y-10">
           <div className="flex items-center justify-between">
-            <h1 className="text-3xl font-bold">Subscription Plans</h1>
-            <div className="flex items-center gap-3">
-              <button
-                className="relative rounded-xl border px-3 py-2 hover:bg-neutral-50"
-                onClick={() => navigate("/notifications")}
-                aria-label="Notifications"
-              >
-                <Bell className="h-5 w-5" />
-              </button>
-            </div>
+            <h1 className="text-4xl font-bold text-neutral-900">Subscription Plans</h1>
           </div>
 
-          {/* Subtitle / Hint */}
-          <p className="text-gray-600">
-            Hey {userName}, choose the plan that fits your charging needs. All plans below are simple boxes and show how long they’re valid.
+          <p className="text-lg text-neutral-600">
+            Hey <span className="font-semibold text-neutral-900">{userName}</span>, choose the plan that fits your charging needs. All plans are valid for one month.
           </p>
 
-          {/* Plans Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {plans.map((plan) => (
               <div
                 key={plan.id}
-                className={`rounded-2xl border shadow-sm p-6 transition hover:shadow-md ${plan.styles}`}
+                className={`rounded-3xl border shadow-lg p-8 transition-all duration-300 transform hover:scale-105 ${plan.styles}`}
               >
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className={`text-xl font-bold ${plan.titleClass}`}>
-                    {plan.name}
-                  </h3>
-                  <span className={`text-xs px-2 py-1 rounded-full ${plan.badgeClass}`}>
-                    {plan.id === 1 ? "Base" : plan.id === 2 ? "Basic" : "Pro"}
+                <div className="flex items-start justify-between mb-4">
+                  <h3 className={`text-2xl font-semibold ${plan.titleClass}`}>{plan.name}</h3>
+                  <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${plan.badgeClass}`}>
+                    {plan.id === 1 ? "Standard" : plan.id === 2 ? "Popular" : "Pro"}
                   </span>
                 </div>
 
-                <p className={`${plan.textClass} mt-1`}>{plan.description}</p>
+                <p className={`${plan.textClass} mt-2`}>{plan.description}</p>
 
-                <div className="mt-4">
+                <div className="mt-6">
                   <span
-                    className={`inline-block text-sm font-semibold px-3 py-1 rounded-lg border bg-white ${
-                      plan.id === 3 ? "text-amber-800" : "text-amber-700"
+                    className={`inline-block text-xl font-bold px-4 py-2 rounded-xl border-2 ${
+                      plan.id === 3 ? "text-white border-amber-600" : "text-amber-600 border-amber-600 bg-white"
                     }`}
                   >
                     {plan.highlight}
@@ -109,18 +122,17 @@ const Subscriptions = () => {
 
                 <div className="mt-4">
                   <p className={`text-sm ${plan.textClass}`}>
-                    <span className="font-semibold">Validity:</span>{" "}
-                    {plan.validityMonths} month
-                    {plan.validityMonths > 1 ? "s" : ""}
+                    <span className="font-semibold">Validity:</span> {plan.validityMonths} month{plan.validityMonths > 1 ? "s" : ""}
                   </p>
                 </div>
 
-                <div className="mt-6">
+                <div className="mt-8">
                   <button
                     onClick={() => handleSelect(plan)}
-                    className={`w-full px-4 py-2 rounded-lg font-medium transition ${plan.buttonClass}`}
+                    disabled={loadingPlanId === plan.id}
+                    className={`w-full px-6 py-3 rounded-xl font-bold transition-all duration-300 ${plan.buttonClass} ${loadingPlanId === plan.id ? "opacity-50 cursor-not-allowed" : ""}`}
                   >
-                    Select
+                    {loadingPlanId === plan.id ? "Processing..." : "Select Plan"}
                   </button>
                 </div>
               </div>
@@ -128,7 +140,6 @@ const Subscriptions = () => {
           </div>
         </main>
 
-        {/* Footer at the very bottom */}
         <DashboardFooter />
       </div>
     </div>

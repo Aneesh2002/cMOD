@@ -1,0 +1,114 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
+
+contract ConsumerWallet {
+    struct User {
+        uint256 walletBalance; // Fiat balance
+        uint256 tokenBalance;  // CmT tokens
+    }
+
+    struct Transaction {
+        address user;
+        string transactionType; // "Top-Up", "Buy Tokens", "Sell Tokens", "Subscription Purchase"
+        uint256 amount;
+        uint256 timestamp;
+    }
+
+    struct SubscriptionPlan {
+        uint256 id;
+        string name;
+        uint256 cost;          // Cost in wallet balance
+        uint256 validityMonths;
+    }
+
+    struct UserSubscription {
+        SubscriptionPlan plan;
+        uint256 expiryTimestamp;
+    }
+
+    mapping(address => User) private users;
+    mapping(address => UserSubscription) private subscriptions;
+    Transaction[] private transactionHistory;
+    SubscriptionPlan[] public plans;
+    address public owner;
+
+    constructor() {
+        owner = msg.sender;
+
+        // Initialize subscription plans
+        plans.push(SubscriptionPlan(1, "ChargeMOD Pay As You Go", 30, 1));
+        plans.push(SubscriptionPlan(2, "ChargeMOD Basic", 100, 1));
+        plans.push(SubscriptionPlan(3, "ChargeMOD Pro", 1999, 1));
+    }
+
+    // --- Fiat Top-up ---
+    function topUpFiat(uint256 amount) external {
+        require(amount > 0, "Amount must be > 0");
+        users[msg.sender].walletBalance += amount;
+        transactionHistory.push(Transaction(msg.sender, "Top-Up", amount, block.timestamp));
+    }
+
+    // --- Buy CmT Tokens ---
+    function buyTokens(uint256 amount) external {
+        require(users[msg.sender].walletBalance >= amount, "Not enough wallet balance");
+        users[msg.sender].walletBalance -= amount;
+        users[msg.sender].tokenBalance += amount;
+        transactionHistory.push(Transaction(msg.sender, "Buy Tokens", amount, block.timestamp));
+    }
+
+    // --- Sell CmT Tokens ---
+    function sellTokens(uint256 amount) external {
+        require(users[msg.sender].tokenBalance >= amount, "Not enough tokens");
+        users[msg.sender].tokenBalance -= amount;
+        users[msg.sender].walletBalance += amount;
+        transactionHistory.push(Transaction(msg.sender, "Sell Tokens", amount, block.timestamp));
+    }
+
+    // --- Get user balances ---
+    function getBalances(address user) external view returns (uint256, uint256) {
+        return (users[user].walletBalance, users[user].tokenBalance);
+    }
+
+    // --- Transaction history for a user ---
+    function getUserTransactions(address user) external view returns (Transaction[] memory) {
+        uint256 count = 0;
+        for (uint256 i = 0; i < transactionHistory.length; i++) {
+            if (transactionHistory[i].user == user) count++;
+        }
+
+        Transaction[] memory userTxs = new Transaction[](count);
+        uint256 j = 0;
+        for (uint256 i = 0; i < transactionHistory.length; i++) {
+            if (transactionHistory[i].user == user) {
+                userTxs[j] = transactionHistory[i];
+                j++;
+            }
+        }
+        return userTxs;
+    }
+
+    // --- Purchase subscription ---
+    function purchaseSubscription(uint256 planId) external {
+        require(planId > 0 && planId <= plans.length, "Invalid planId");
+        SubscriptionPlan memory plan = plans[planId - 1];
+        require(users[msg.sender].walletBalance >= plan.cost, "Insufficient wallet balance");
+
+        // Deduct cost
+        users[msg.sender].walletBalance -= plan.cost;
+
+        // Save subscription
+        subscriptions[msg.sender] = UserSubscription({
+            plan: plan,
+            expiryTimestamp: block.timestamp + (plan.validityMonths * 30 days)
+        });
+
+        // Log transaction
+        transactionHistory.push(Transaction(msg.sender, "Subscription Purchase", plan.cost, block.timestamp));
+    }
+
+    // --- Get user subscription ---
+    function getUserSubscription(address user) external view returns (SubscriptionPlan memory, uint256) {
+        UserSubscription memory sub = subscriptions[user];
+        return (sub.plan, sub.expiryTimestamp);
+    }
+}
