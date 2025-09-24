@@ -10,6 +10,8 @@ const ConsumerDashboard = () => {
   const [tokens, setTokens] = useState("0");
   const [amount, setAmount] = useState("");
   const [transactions, setTransactions] = useState([]);
+  const [energyPackets, setEnergyPackets] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   // Load balances
   const loadBalances = async () => {
@@ -41,9 +43,7 @@ const ConsumerDashboard = () => {
       const addr = await signer.getAddress();
       const contract = new ethers.Contract(contractAddress, abi, signer);
 
-      // use getUserTransactions if included in ABI, otherwise use getTransactionHistory
       const txs = await contract.getUserTransactions(addr);
-      // format results
       const formatted = txs.map((tx) => ({
         type: tx.transactionType,
         amount: tx.amount.toString(),
@@ -52,6 +52,82 @@ const ConsumerDashboard = () => {
       setTransactions(formatted);
     } catch (err) {
       console.error(err);
+    }
+  };
+
+  // Load energy packets from suppliers
+  const loadEnergyPackets = async () => {
+    try {
+      setLoading(true);
+      if (!window.ethereum) return;
+
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      await provider.send("eth_requestAccounts", []);
+      const signer = await provider.getSigner();
+      const contract = new ethers.Contract(contractAddress, abi, signer);
+
+      // This will be implemented later - for now showing mock data
+      const mockPackets = [
+        {
+          id: 1,
+          supplier: "GreenPower Co.",
+          energy: "50 kWh",
+          price: "₹500",
+          pricePerUnit: "₹10/kWh",
+          available: true,
+          renewable: true
+        },
+        {
+          id: 2,
+          supplier: "Solar Energy Ltd.",
+          energy: "100 kWh",
+          price: "₹900",
+          pricePerUnit: "₹9/kWh",
+          available: true,
+          renewable: true
+        },
+        {
+          id: 3,
+          supplier: "Wind Power Inc.",
+          energy: "75 kWh",
+          price: "₹675",
+          pricePerUnit: "₹9/kWh",
+          available: false,
+          renewable: true
+        }
+      ];
+
+      // TODO: Replace with actual contract call
+      // const packets = await contract.getAvailableEnergyPackets();
+      setEnergyPackets(mockPackets);
+    } catch (err) {
+      console.error("Error loading energy packets:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Purchase energy packet
+  const handlePurchasePacket = async (packetId, price) => {
+    try {
+      if (!window.ethereum) return alert("MetaMask not installed");
+
+      const provider = new ethers.BrowserProvider(window.ethereum);
+      await provider.send("eth_requestAccounts", []);
+      const signer = await provider.getSigner();
+      const contract = new ethers.Contract(contractAddress, abi, signer);
+
+      // TODO: Implement actual contract call
+      // const tx = await contract.purchaseEnergyPacket(packetId);
+      // await tx.wait();
+      
+      alert(`Energy packet ${packetId} purchased successfully!`);
+      loadBalances();
+      loadEnergyPackets();
+      loadTransactions();
+    } catch (err) {
+      console.error("Error purchasing packet:", err);
+      alert("Failed to purchase energy packet");
     }
   };
 
@@ -115,20 +191,21 @@ const ConsumerDashboard = () => {
   useEffect(() => {
     loadBalances();
     loadTransactions();
+    loadEnergyPackets();
   }, []);
 
   return (
     <div className="p-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold">Consumer Dashboard</h1>
+        <h1 className="text-3xl font-bold">Consumer Dashboard</h1>
       </div>
 
       {/* Banner */}
-      <div className="bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100  text-gray-900 rounded-3xl p-8 border border-gray-100 mb-6">
-        <h2 className="text-xl font-bold mb-2">Welcome Back!</h2>
+      <div className="bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 text-gray-900 rounded-3xl p-8 border border-gray-100 mb-6">
+        <h2 className="text-2xl font-bold mb-2">Welcome Back!</h2>
         <p className="text-sm">
-          Manage your wallet, tokens, and charging stations easily.
+          Manage your wallet, tokens, and purchase energy packets from suppliers.
         </p>
       </div>
 
@@ -198,31 +275,73 @@ const ConsumerDashboard = () => {
           </div>
         </Card>
 
-        {/* Favorite Stations */}
-        <Card title="Favorite Stations">
-          <input
-            type="text"
-            placeholder="Search station..."
-            className="w-full p-2 border rounded mb-5 mt-3"
-          />
-          <button className="px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-950 w-full">
-            Add Station
+        {/* Energy Packets */}
+        <Card title="Available Energy Packets">
+          <div className="space-y-3 max-h-64 overflow-y-auto">
+            {loading ? (
+              <div className="flex items-center justify-center py-4">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+                <span className="ml-2 text-sm text-gray-600">Loading...</span>
+              </div>
+            ) : energyPackets.length > 0 ? (
+              energyPackets.map((packet) => (
+                <div
+                  key={packet.id}
+                  className={`p-3 rounded-lg border ${
+                    packet.available 
+                      ? "border-green-200 bg-green-50" 
+                      : "border-gray-200 bg-gray-50"
+                  }`}
+                >
+                  <div className="flex justify-between items-start mb-2">
+                    <div>
+                      <p className="font-medium text-sm">{packet.supplier}</p>
+                      <p className="text-xs text-gray-600">{packet.energy}</p>
+                    </div>
+                    {packet.renewable && (
+                      <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
+                        🌱 Green
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <p className="font-bold text-sm">{packet.price}</p>
+                      <p className="text-xs text-gray-500">{packet.pricePerUnit}</p>
+                    </div>
+                    <button
+                      onClick={() => handlePurchasePacket(packet.id, packet.price)}
+                      disabled={!packet.available}
+                      className={`px-3 py-1 text-xs rounded ${
+                        packet.available
+                          ? "bg-blue-600 text-white hover:bg-blue-700"
+                          : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                      }`}
+                    >
+                      {packet.available ? "Buy" : "Sold Out"}
+                    </button>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="text-center py-4 text-gray-500 text-sm">
+                No energy packets available
+              </div>
+            )}
+          </div>
+          <button
+            onClick={loadEnergyPackets}
+            className="mt-3 w-full px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-950 text-sm"
+          >
+            Refresh Packets
           </button>
         </Card>
       </div>
 
-
       {/* Map & Graph */}
       <div className="flex flex-row gap-4 mt-4 h-[450px]">
         {/* Left card */}
-        <div className="basis-1/3">
-          <Card title="Nearest Charging Stations" className="h-full">
-            <div className="h-[326px] bg-gray-200 rounded flex items-center justify-center">
-              <Map />
-            </div>
-          </Card>
-        </div>
-
+       
         {/* Right card */}
         <div className="basis-2/3">
           <Card title="Active hours" className="h-full">

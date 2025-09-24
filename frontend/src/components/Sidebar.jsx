@@ -16,7 +16,7 @@ const Sidebar = () => {
 
   const navItems = [
     { label: "Dashboard", icon: LayoutDashboard,path:'/consumer-dashboard' },
-    { label: "Stations", icon: MapPin, path: "/stations" },
+    // { label: "Stations", icon: MapPin, path: "/stations" },
     { label: "Transactions", icon: ReceiptText,path: "/transactions-page" },
     { label: "Account", icon: User2, path: "/consumer-profile" },
     { label: "Subscription Plan", icon: BadgeDollarSign,path: "/subscriptions" },
