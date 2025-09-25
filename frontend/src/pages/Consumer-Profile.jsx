@@ -20,11 +20,12 @@ const ConsumerProfile = () => {
       setWalletBalance(Number(wallet));
 
       const subData = await contract.getUserSubscription(window.ethereum.selectedAddress);
-      if (subData && subData.plan.id !== "0") {
+
+      // Only set subscription if plan id is not 0 and expiry is in the future
+      if (subData && subData.plan.id !== "0" && Number(subData.expiryTimestamp) > Date.now() / 1000) {
         setSubscription({
           planName: subData.plan.name,
-          description: subData.plan.description,
-          price: subData.plan.cost,
+          price: subData.cost,
           validityMonths: subData.plan.validityMonths,
           expiry: new Date(Number(subData.expiryTimestamp) * 1000),
         });
@@ -66,8 +67,7 @@ const ConsumerProfile = () => {
             Empowering the Future of E-Mobility
           </p>
           <p className="text-gray-700 text-lg mt-2">
-            Welcome back, {userName}. Manage your energy consumption and
-            charging with ease.
+            Welcome back, {userName}. Manage your energy consumption and charging with ease.
           </p>
         </div>
 
@@ -92,7 +92,13 @@ const ConsumerProfile = () => {
           <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 lg:col-span-2">
             <div className="flex items-center justify-between mb-2">
               <h3 className="text-xl font-bold">Subscription</h3>
-              <span className="text-xs px-2 py-1 rounded-full bg-emerald-100 text-emerald-700 border border-emerald-200">
+              <span
+                className={`text-xs px-2 py-1 rounded-full border ${
+                  subscription
+                    ? "bg-emerald-100 text-emerald-700 border-emerald-200"
+                    : "bg-gray-100 text-gray-500 border-gray-200"
+                }`}
+              >
                 {subscription ? "Active" : "None"}
               </span>
             </div>
@@ -108,11 +114,10 @@ const ConsumerProfile = () => {
                         {subscription.planName}
                       </span>
                     </div>
-                    <p className="text-gray-700 mt-2">{subscription.description}</p>
 
                     <div className="mt-4">
                       <span className="inline-block text-sm font-semibold px-3 py-1 rounded-lg bg-white border">
-                        ₹{subscription.price} / month
+                        {subscription.price} Tokens / month
                       </span>
                     </div>
                   </div>
@@ -125,7 +130,6 @@ const ConsumerProfile = () => {
                     </p>
                     <button
                       className="mt-3 px-4 py-2 rounded-lg bg-gray-200 text-gray-600 cursor-not-allowed"
-                      disabled
                     >
                       Active
                     </button>

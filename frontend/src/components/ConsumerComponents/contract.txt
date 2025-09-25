@@ -17,13 +17,13 @@ contract ConsumerWallet {
     struct SubscriptionPlan {
         uint256 id;
         string name;
-        uint256 cost;          // Cost in wallet balance
         uint256 validityMonths;
     }
 
     struct UserSubscription {
         SubscriptionPlan plan;
         uint256 expiryTimestamp;
+        uint256 cost;
     }
 
     mapping(address => User) private users;
@@ -35,10 +35,10 @@ contract ConsumerWallet {
     constructor() {
         owner = msg.sender;
 
-        // Initialize subscription plans
-        plans.push(SubscriptionPlan(1, "ChargeMOD Pay As You Go", 30, 1));
-        plans.push(SubscriptionPlan(2, "ChargeMOD Basic", 100, 1));
-        plans.push(SubscriptionPlan(3, "ChargeMOD Pro", 1999, 1));
+        // Initialize subscription plans (frontend will decide cost in tokens)
+        plans.push(SubscriptionPlan(1, "ChargeMOD Basic", 1));
+        plans.push(SubscriptionPlan(2, "ChargeMOD Flow", 1));
+        plans.push(SubscriptionPlan(3, "ChargeMOD Pro", 1));
     }
 
     // --- Fiat Top-up ---
@@ -87,28 +87,31 @@ contract ConsumerWallet {
         return userTxs;
     }
 
-    // --- Purchase subscription ---
-    function purchaseSubscription(uint256 planId) external {
+    // --- Purchase subscription (tokens only, cost provided by frontend) ---
+    function purchaseSubscription(uint256 planId, uint256 cost) external {
         require(planId > 0 && planId <= plans.length, "Invalid planId");
         SubscriptionPlan memory plan = plans[planId - 1];
-        require(users[msg.sender].walletBalance >= plan.cost, "Insufficient wallet balance");
 
-        // Deduct cost
-        users[msg.sender].walletBalance -= plan.cost;
+        require(users[msg.sender].tokenBalance >= cost, "Insufficient token balance");
+
+        // Deduct tokens
+        users[msg.sender].tokenBalance -= cost;
 
         // Save subscription
         subscriptions[msg.sender] = UserSubscription({
             plan: plan,
-            expiryTimestamp: block.timestamp + (plan.validityMonths * 30 days)
+            expiryTimestamp: block.timestamp + (plan.validityMonths * 30 days),
+            cost: cost
         });
 
         // Log transaction
-        transactionHistory.push(Transaction(msg.sender, "Subscription Purchase", plan.cost, block.timestamp));
+        transactionHistory.push(Transaction(msg.sender, "Subscription Purchase", cost, block.timestamp));
     }
 
     // --- Get user subscription ---
-    function getUserSubscription(address user) external view returns (SubscriptionPlan memory, uint256) {
-        UserSubscription memory sub = subscriptions[user];
-        return (sub.plan, sub.expiryTimestamp);
-    }
+    function getUserSubscription(address user) external view returns (SubscriptionPlan memory, uint256, uint256) {
+    UserSubscription memory sub = subscriptions[user];
+    return (sub.plan, sub.expiryTimestamp, sub.cost);
+}
+
 }
