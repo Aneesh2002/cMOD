@@ -79,6 +79,7 @@ import {
   Gift,
   Menu,
   X,
+  Wallet,
   Zap,
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
@@ -121,7 +122,7 @@ const Sidebar = () => {
     { label: "Transactions", icon: ReceiptText, path: "/transactions-page" },
     { label: "Account", icon: User2, path: "/consumer-profile" },
     { label: "Subscription Plan", icon: BadgeDollarSign, path: "/subscriptions" },
-    { label: "Redeem", icon: Gift, path: "/redeem" },
+    { label: "wallet", icon: Wallet, path: "/redeem" },
   ];
 
   // Add Sell Energy option if approved

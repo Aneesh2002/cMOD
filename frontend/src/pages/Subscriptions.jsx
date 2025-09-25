@@ -12,11 +12,11 @@ const Subscriptions = () => {
   const plans = [
     {
       id: 1,
-      name: "ChargeMOD Pay As You Go",
-      description: "Pay only for the energy you consume with ET tokens.",
-      highlight: "₹30/kWh • ₹30/ET",
+      name: "ChargeMOD Basic",
+      description: "Pay only for the energy you consume.",
+      highlight: "500 KWh",
       validityMonths: 1,
-      cost: 30,
+      cost: 499, // cost in tokens
       styles: "bg-gradient-to-br from-blue-200 via-purple-200 to-pink-200",
       titleClass: "text-neutral-900",
       textClass: "text-neutral-900",
@@ -25,11 +25,11 @@ const Subscriptions = () => {
     },
     {
       id: 2,
-      name: "ChargeMOD Basic",
-      description: "Fixed monthly ET allocation for predictable usage.",
-      highlight: "100 ET / month",
+      name: "ChargeMOD Flow",
+      description: "Fixed monthly Token for predictable usage.",
+      highlight: "1000 KWh",
       validityMonths: 1,
-      cost: 100,
+      cost: 999, // cost in tokens
       styles: "bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500",
       titleClass: "text-neutral-100",
       textClass: "text-neutral-100",
@@ -39,15 +39,15 @@ const Subscriptions = () => {
     {
       id: 3,
       name: "ChargeMOD Pro",
-      description: "Unlimited charging for a flat monthly price.",
-      highlight: "₹1,999 / month • Unlimited",
+      description: "Charging for a flat monthly price.",
+      highlight: "2000 KWh",
       validityMonths: 1,
-      cost: 1999,
+      cost: 1999, 
       styles: "bg-gradient-to-br from-blue-900 via-purple-900 to-pink-900",
       titleClass: "text-white",
       textClass: "text-neutral-200",
       badgeClass: "bg-amber-600 text-white border-none",
-      buttonClass: "bg-amber-600 text-white hover:bg-neutral-100",
+      buttonClass: "bg-amber-600 text-white hover:bg-amber-700",
     },
   ];
 
@@ -56,17 +56,17 @@ const Subscriptions = () => {
       setLoadingPlanId(plan.id);
       const contract = await getContract();
 
-      // Get user's wallet balance
-      const [walletBalance] = await contract.getBalances(window.ethereum.selectedAddress);
+      // Get user's token balance
+      const [, tokenBalance] = await contract.getBalances(window.ethereum.selectedAddress);
 
-      if (Number(walletBalance) < plan.cost) {
-        alert("Insufficient wallet balance. Please top up before purchasing this plan.");
+      if (Number(tokenBalance) < plan.cost) {
+        alert("Insufficient token balance. Please buy tokens before purchasing this plan.");
         setLoadingPlanId(null);
         return;
       }
 
-      // Call contract to purchase subscription
-      const tx = await contract.purchaseSubscription(plan.id);
+      // Call contract to purchase subscription (tokens only)
+      const tx = await contract.purchaseSubscription(plan.id, plan.cost);
       await tx.wait();
 
       alert(`Subscription "${plan.name}" purchased successfully!`);
@@ -122,8 +122,11 @@ const Subscriptions = () => {
 
                 <div className="mt-4">
                   <p className={`text-sm ${plan.textClass}`}>
-                    <span className="font-semibold">Validity:</span> {plan.validityMonths} month{plan.validityMonths > 1 ? "s" : ""}
+                    <span className="font-semibold">Validity:</span> {plan.validityMonths} month
                   </p>
+                </div>
+                <div>
+                  <p className={`text-basic font-bold ${plan.textClass}`}>Cost: {plan.cost} Tokens</p>
                 </div>
 
                 <div className="mt-8">

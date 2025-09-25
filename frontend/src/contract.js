@@ -1,16 +1,18 @@
 import { ethers } from "ethers";
 
-export const contractAddress = "0x3762fE63AC4857a3Dec7A1F7efF39ca7A7a65934";
+export const contractAddress = "0xFE510A47f20e941674f179dDC3C00a68377a0194";
 
-// Corrected ABI
+// ✅ Updated ABI (matches the new Solidity contract)
 export const abi = [
   "function topUpFiat(uint256 amount) external",
   "function buyTokens(uint256 amount) external",
   "function sellTokens(uint256 amount) external",
   "function getBalances(address user) external view returns (uint256, uint256)",
   "function getUserTransactions(address user) external view returns (tuple(address user, string transactionType, uint256 amount, uint256 timestamp)[])",
-  "function purchaseSubscription(uint256 planId) external",
-  "function getUserSubscription(address user) external view returns (tuple(uint256 id, string name, uint256 cost, uint256 validityMonths) plan, uint256 expiryTimestamp)"
+  "function purchaseSubscription(uint256 planId, uint256 cost) external",
+  "function getUserSubscription(address user) external view returns (tuple(uint256 id, string name, uint256 validityMonths) plan, uint256 expiryTimestamp, uint256 cost)",
+  "function plans(uint256) external view returns (uint256 id, string name, uint256 validityMonths)",
+  "function owner() external view returns (address)"
 ];
 
 // --- Get contract instance ---
@@ -49,9 +51,9 @@ export const getBalances = async (userAddress) => {
 };
 
 // --- Subscription functions ---
-export const purchaseSubscription = async (planId) => {
+export const purchaseSubscription = async (planId, cost) => {
   const contract = await getContract();
-  const tx = await contract.purchaseSubscription(planId);
+  const tx = await contract.purchaseSubscription(planId, cost);
   await tx.wait();
 };
 
@@ -64,6 +66,17 @@ export const getUserSubscription = async (userAddress) => {
   };
 };
 
+// --- Fetch available plans (optional helper) ---
+export const getSubscriptionPlan = async (planId) => {
+  const contract = await getContract();
+  const plan = await contract.plans(planId);
+  return {
+    id: Number(plan.id),
+    name: plan.name,
+    validityMonths: Number(plan.validityMonths)
+  };
+};
+
 // --- Transaction functions ---
 export const getUserTransactions = async (userAddress) => {
   const contract = await getContract();
@@ -73,7 +86,7 @@ export const getUserTransactions = async (userAddress) => {
   return txs.map(tx => ({
     user: tx.user,
     type: tx.transactionType,
-    amount: tx.amount,
+    amount: Number(tx.amount),
     timestamp: new Date(Number(tx.timestamp) * 1000)
   }));
 };
