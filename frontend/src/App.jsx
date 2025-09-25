@@ -11,8 +11,7 @@ import { AppLayout } from "./layout/AppLayout";
 
 // Pages
 import { Dashboard } from "./pages/Dashboard";
-import { Login } from "./pages/auth/Login";
-import { Register } from "./pages/auth/Register";
+
 import { Units } from "./pages/Units";
 import { Balance } from "./pages/Balance";
 import { Topup } from "./pages/Topup";
@@ -32,13 +31,14 @@ import Subscriptions from "./pages/Subscriptions";
 import MapPage from "./pages/Sations";
 import { ConsumerLayout } from "./layout/ConsumerDashboardLayout";
 import WalletPage from "./pages/Rewards";
+import AuthPage from "./pages/auth/Login";
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         {/* Auth Routes */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        <Route path="/login" element={<AuthPage />} />
+        {/* <Route path="/register" element={<Register />} /> */}
 
         {/* Standalone Dashboards */}
         <Route path="/consumer-dashboard" element={<ConsumerLayout />} />
@@ -52,7 +52,7 @@ function App() {
         <Route path="/redeem" element={<WalletPage />} />
 
         {/* App Layout with Nested Routes */}
-        <Route path="/" element={<AppLayout />}>
+        <Route path="/" element={<ConsumerLayout />}>
           <Route index element={<Dashboard />} />
           <Route path="units" element={<Units />} />
           <Route path="balance" element={<Balance />} />
