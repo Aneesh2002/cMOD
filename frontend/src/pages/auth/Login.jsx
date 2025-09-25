@@ -1,59 +1,69 @@
-import { useState } from "react";
-import { useNavigate, NavLink } from "react-router-dom";
-import { Zap } from "lucide-react";
+// src/pages/AuthPage.jsx
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
-export const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [role, setRole] = useState(localStorage.getItem("role") || "consumer");
-  const [nameOption, setNameOption] = useState(
-    localStorage.getItem("nameOption") || "1"
-  );
-
+const AuthPage = () => {
+  const [isLogin, setIsLogin] = useState(true);
+  const [username, setUsername] = useState("");
+  const [role, setRole] = useState("consumer");
   const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
-  e.preventDefault();
-  const res = await fetch("http://localhost:5000/api/login", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ role, name: nameOption, email, password }),
-    credentials: "include",
-  });
-  const data = await res.json();
-  if (res.ok) navigate(`/${role}-dashboard`);
-  else alert(data.error);
-};
+  const handleAuth = async () => {
+    if (!window.ethereum) return alert("MetaMask not found");
 
+    // Get wallet from MetaMask
+    const [wallet] = await window.ethereum.request({ method: "eth_requestAccounts" });
 
-  
-
-  const accent =
-    role === "consumer" ? "amber" : role === "supplier" ? "green" : "indigo";
+    try {
+      if (isLogin) {
+        // --- LOGIN ---
+        const { data } = await axios.post("http://localhost:5000/api/auth/login", {
+          wallet,
+          role,
+        });
+        alert("✅ Login successful");
+        navigate(`/${data.role}-dashboard`);
+      } else {
+        // --- SIGNUP ---
+        const { data } = await axios.post("http://localhost:5000/api/auth/signup", {
+          wallet,
+          username,
+          role,
+        });
+        alert("✅ Signup successful");
+        navigate(`/${data.role}-dashboard`);
+      }
+    } catch (err) {
+      alert(err.response?.data?.message || "❌ Error");
+    }
+  };
 
   return (
-    <div className="min-h-dvh grid place-items-center bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 px-4">
-      <div className="w-full max-w-md rounded-2xl bg-white shadow-xl border border-gray-100 p-8">
-        <div className="flex items-center justify-center space-x-3 mb-4">
-          <div className="bg-gradient-to-r from-amber-500 to-orange-500 p-3 rounded-2xl">
-            <Zap className="h-7 w-7 text-white" />
+    <div className="flex justify-center items-center h-screen bg-gray-100">
+      <div className="bg-white shadow-lg rounded-xl p-8 w-96">
+        <h2 className="text-2xl font-bold text-center mb-6">
+          {isLogin ? "Login" : "Signup"}
+        </h2>
+
+        {!isLogin && (
+          <div className="mb-4">
+            <label className="block text-sm font-medium">Username</label>
+            <input
+              type="text"
+              className="w-full mt-1 p-2 border rounded"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
           </div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
-            chargeMOD
-          </h1>
-        </div>
-        <p className="text-center text-sm text-gray-600 mb-4">
-          Login to dashboard
-        </p>
+        )}
 
         <div className="mb-4">
-          <label className="block text-sm font-semibold text-gray-700 mb-1">
-            Role
-          </label>
+          <label className="block text-sm font-medium">Role</label>
           <select
+            className="w-full mt-1 p-2 border rounded"
             value={role}
             onChange={(e) => setRole(e.target.value)}
-            className="w-full rounded-xl border border-gray-300 px-4 py-2 focus:ring-2 focus:ring-gray-400"
           >
             <option value="consumer">Consumer</option>
             <option value="supplier">Supplier</option>
@@ -61,65 +71,22 @@ export const Login = () => {
           </select>
         </div>
 
-      
+        <button
+          onClick={handleAuth}
+          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+        >
+          {isLogin ? "Login" : "Signup"}
+        </button>
 
-     <form className="space-y-4" onSubmit={handleSubmit}>
-  <div>
-    <label className="block text-sm font-semibold text-gray-700 mb-1">
-      Name
-    </label>
-    <input
-      type="text"
-      value={nameOption}
-      onChange={(e) => setNameOption(e.target.value)}
-      placeholder="Enter your name"
-      className="w-full rounded-xl border px-4 py-2 focus:ring-2 focus:ring-gray-400"
-      required
-    />
-  </div>
-  <div>
-    <label className="block text-sm font-semibold text-gray-700 mb-1">
-      Email
-    </label>
-    <input
-      type="email"
-      value={email}
-      onChange={(e) => setEmail(e.target.value)}
-      placeholder="you@example.com"
-      className="w-full rounded-xl border px-4 py-2 focus:ring-2 focus:ring-gray-400"
-      required
-    />
-  </div>
-  <div>
-    <label className="block text-sm font-semibold text-gray-700 mb-1">
-      Password
-    </label>
-    <input
-      type="password"
-      value={password}
-      onChange={(e) => setPassword(e.target.value)}
-      placeholder="••••••••"
-      className="w-full rounded-xl border px-4 py-2 focus:ring-2 focus:ring-gray-400"
-      required
-    />
-  </div>
-  <button
-    type="submit"
-    className="w-full rounded-xl text-white font-semibold py-3 transition bg-neutral-900 hover:bg-neutral-800"
-  >
-    Continue
-  </button>
-</form>
-
-
-
-        <p className="text-center text-sm mt-5 text-gray-600">
-          No account?{" "}
-          <NavLink to="/register" className="text-amber-600 font-semibold">
-            Register
-          </NavLink>
+        <p
+          onClick={() => setIsLogin(!isLogin)}
+          className="text-sm text-center mt-4 text-blue-500 cursor-pointer"
+        >
+          {isLogin ? "Don’t have an account? Signup" : "Already have an account? Login"}
         </p>
       </div>
     </div>
   );
 };
+
+export default AuthPage;
