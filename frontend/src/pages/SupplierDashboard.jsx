@@ -101,26 +101,23 @@ const SupplierDashboard = () => {
                 }
         };
 
-        return (
-                <div className="min-h-screen bg-gray-100 flex flex-col">
-                        <Header onMenuClick={() => setSidebarOpen(!sidebarOpen)} supplierName={mockData.supplierName} />
-                        <div className="flex flex-1 overflow-hidden">
-                                <Sidebar 
-                                        sidebarOpen={sidebarOpen} 
-                                        setSidebarOpen={setSidebarOpen} 
-                                        activeSection={activeSection} 
-                                        setActiveSection={setActiveSection} 
-                                />
-                                <div className="flex flex-col flex-1 overflow-hidden">
-                                        <main className="flex-1 p-6 overflow-y-auto">
-                                                {renderActiveSection()}
-                                        </main>
-                                        <Footer />
-                                </div>
-                        </div>
-                        {sidebarOpen && <div className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden" onClick={() => setSidebarOpen(false)}></div>}
-                </div>
-        );
-};
+  return (
+    // Pad the top by 4rem to avoid the fixed Topbar overlap
+    <div className="min-h-screen bg-gray-50 text-gray-900 pt-16">
+      <Topbar onToggleSidebar={() => setSidebarOpen(true)} />
 
-export default SupplierDashboard;
+      {/* Fixed sidebar (outside normal flow) */}
+      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+
+      {/* Content column offset to the right of the sidebar on lg+ */}
+      <main className="mx-auto max-w-[1400px] px-4 py-6 sm:px-6 lg:py-8 lg:ml-72">
+        <Outlet />
+      </main>
+
+      {/* Full-width dark footer AFTER the content, aligned with content area */}
+      <div className="lg:ml-72">
+        <Footer />
+      </div>
+    </div>
+  );
+}

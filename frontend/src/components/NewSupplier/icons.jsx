@@ -1,0 +1,16 @@
+import React from "react";
+export function Logo(){return(<div className="flex items-center gap-1 text-lg font-bold tracking-tight"><span className="text-gray-900">charge</span><span className="text-orange-400">MOD</span></div>);}
+export function Dot({className=""}){return <span className={`inline-block size-2 rounded-full ${className}`} />}
+export function SearchIcon(){return(<svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="11" cy="11" r="7"/><path strokeLinecap="round" d="M21 21l-3.2-3.2"/></svg>)}
+export function BellIcon(){return(<svg viewBox="0 0 24 24" className="size-5" fill="none" stroke="currentColor" strokeWidth="2"><path d="M15 17h5l-1.4-1.4A2 2 0 0 1 18 14.2V11a6 6 0 1 0-12 0v3.2a2 2 0 0 1-.6 1.4L4 17h5"/><path d="M9 17a3 3 0 0 0 6 0"/></svg>)}
+export function OverviewIcon(){return(<svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/></svg>)}
+export function ReceiptIcon(){return(<svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 2h12l2 3v15l-2-1-2 1-2-1-2 1-2-1-2 1-2-1V5z"/><path d="M8 9h8M8 13h8M8 17h5"/></svg>)}
+export function WalletIcon(){return(<svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M18 12h2v4h-2a2 2 0 0 1-2-2 2 2 0 0 1 2-2z"/></svg>)}
+export function ZapIcon(){return(<svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2"><path d="M13 2L3 14h7l-1 8 10-12h-7l1-8z"/></svg>)}
+export function ToolIcon(){return(<svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14.7 6.3a4 4 0 1 0-5.4 5.4L3 18v3h3l6.3-6.3a4 4 0 0 0 5.4-5.4z"/></svg>)}
+export function ArrowDown(){return(<svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" d="M7 10l5 5 5-5"/></svg>)}
+export function ArrowUp(){return(<svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" d="M7 14l5-5 5 5"/></svg>)}
+export function LogOutIcon(){return(<svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>)}
+export function CoinIcon(){return(<svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2"><ellipse cx="12" cy="7" rx="7" ry="3"/><path d="M5 7v10c0 1.7 3.1 3 7 3s7-1.3 7-3V7"/></svg>)}
+export function LeafIcon(){return(<svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 3S10 3 6.5 6.5 3 21 3 21s11 0 14.5-3.5S21 3 21 3z"/><path d="M9 15c1-4 6-9 12-12"/></svg>)}
+export function ActivityIcon(){return(<svg viewBox="0 0 24 24" className="size-4" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 12H18l-2 6-4-12-2 6H2"/></svg>)}
