@@ -1,11 +1,74 @@
-import React from "react";
-import SupplierRoutes from "./routes/SupplierRoutes.jsx";
-import { BrowserRouter } from "react-router-dom";
 
-export default function App() {
+
+
+// src/App.jsx
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+
+import "./index.css";
+
+// Layout
+import { AppLayout } from "./layout/AppLayout";
+
+// Pages
+import { Dashboard } from "./pages/Dashboard";
+
+import { Units } from "./pages/Units";
+import { Balance } from "./pages/Balance";
+import { Topup } from "./pages/Topup";
+import { Sources } from "./pages/Sources";
+import { Transactions } from "./pages/Transactions";
+import { Issues } from "./pages/Issues";
+import { Profile } from "./pages/Profile";
+import { Notifications } from "./pages/Notifications";
+import ConsumerDashboard from "./pages/ConsumerDashboard";
+import SupplierDashboard from "./pages/SupplierDashboard";
+import ProviderDashboard from "./pages/ProviderDashboard";
+import { Providers } from "./pages/Providers";
+import AddSupplier from "./pages/AddSupplier";
+import TransactionsPage from "./pages/TransactionsPage";
+import ConsumerProfile from "./pages/Consumer-Profile";
+import Subscriptions from "./pages/Subscriptions";
+import MapPage from "./pages/Sations";
+import { ConsumerLayout } from "./layout/ConsumerDashboardLayout";
+import WalletPage from "./pages/Rewards";
+import AuthPage from "./pages/auth/Login";
+function App() {
   return (
     <BrowserRouter>
-      <SupplierRoutes />
+      <Routes>
+        {/* Auth Routes */}
+        <Route path="/login" element={<AuthPage />} />
+        {/* <Route path="/register" element={<Register />} /> */}
+
+        {/* Standalone Dashboards */}
+        <Route path="/consumer-dashboard" element={<ConsumerLayout />} />
+        <Route path="/supplier-dashboard" element={<SupplierDashboard />} />
+        <Route path="/provider-dashboard" element={<ProviderDashboard />} />
+        <Route path="/add-supplier" element={<AddSupplier />} />
+        <Route path="/consumer-profile" element={<ConsumerProfile />} />
+        <Route path="/subscriptions" element={<Subscriptions />} /> 
+        <Route path="transactions-page" element={<TransactionsPage />} />
+        <Route path="/stations" element={<MapPage />} />
+        <Route path="/redeem" element={<WalletPage />} />
+
+        {/* App Layout with Nested Routes */}
+        <Route path="/" element={<ConsumerLayout />}>
+          <Route index element={<Dashboard />} />
+          <Route path="units" element={<Units />} />
+          <Route path="balance" element={<Balance />} />
+          <Route path="topup" element={<Topup />} />
+          <Route path="sources" element={<Sources />} />
+          <Route path="providers" element={<Providers />} />
+          <Route path="transactions" element={<Transactions />} />
+          <Route path="issues" element={<Issues />} />
+          <Route path="profile" element={<Profile />} />
+          <Route path="notifications" element={<Notifications />} />
+          {/* <Route path="transactions-page" element={<TransactionsPage />} /> */}
+        </Route>
+
+        {/* Catch-all redirect */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
     </BrowserRouter>
   );
 }

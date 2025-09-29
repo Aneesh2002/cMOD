@@ -1,11 +1,10 @@
 import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema({
-  role: { type: String, enum: ["consumer", "supplier", "provider"], required: true },
-  name: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
-});
+  username: { type: String, required: true, unique: true },
+  wallet: { type: String, required: true, unique: true },
+  roles: { type: [String], default: ["consumer"] },
+  nonce: { type: String, default: () => Math.floor(Math.random() * 1000000).toString() },
+}, { timestamps: true });
 
-const User = mongoose.model("User", userSchema);
-export default User;
+export default mongoose.model("User", userSchema);
